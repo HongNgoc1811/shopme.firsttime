@@ -31,7 +31,6 @@ export default function EditUserModal({isOpen, onClose, itemEdit}) {
         if ((value.match(/[^a-z]/gi) || []).length < 1) {
             return "Password needs at least 1 symbol";
         }
-
         return null;
     };
     const handleSave = async () => {
@@ -48,7 +47,6 @@ export default function EditUserModal({isOpen, onClose, itemEdit}) {
             //     email: email,
             //     password: password,
             // }
-
         }
         const res = await fetch(`/api/admin/users/${itemEdit.id}`, {
             method: "PUT",
@@ -66,17 +64,15 @@ export default function EditUserModal({isOpen, onClose, itemEdit}) {
         setEmail(itemEdit.email)
         setAvatar_Url(itemEdit.avatar_url)
         setStatus(itemEdit.status)
-
-
-
         console.log("edit",itemEdit)
     }, [itemEdit]);
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Edit User" size="3xl">
             <ModalContent>
                 {(onClose) => (
                     <>
-                    <ModalHeader className="flex flex-col gap-1">Create User</ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1">Edit User</ModalHeader>
                     <ModalBody>
                 <div className="flex flex-col gap-4 w-full p-5">
                     <Input
@@ -150,7 +146,6 @@ export default function EditUserModal({isOpen, onClose, itemEdit}) {
                                     setRole(Array.from(keys)[0] as string)
                                 }
                                 placeholder="Select role for user"
-
                             >
                                 <SelectItem key="Admin">Admin</SelectItem>
                                 <SelectItem key="User">User</SelectItem>

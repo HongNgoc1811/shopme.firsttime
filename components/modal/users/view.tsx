@@ -15,18 +15,23 @@ export default function ViewUserModal({isOpen, onClose, userView}: Props) {
     const [selectedUser] = useState(null);
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Edit User" size="3xl">
+        <>
+        <EditUserModal
+            isOpen={IsOpenEdit}
+            onClose={() => setIsOpenEdit(false)}
+            itemEdit={selectedUser}
+        />
+        <Modal isOpen={isOpen} onClose={onClose} title="Edit User" size="4xl">
             <ModalContent>
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1">Create User</ModalHeader>
                         <ModalBody>
                             <>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-4">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3">
 
                                     {/* LEFT COLUMN */}
-                                    <div
-                                        className="col-span-1 p-6 rounded-2xl border bg-white border-default-200 shadow-sm flex flex-col items-center text-center">
+                                    <div className="col-span-1 p-3 rounded-2xl border bg-white border-default-200 shadow-sm flex flex-col items-center text-center">
                                         {/*<img*/}
                                         {/*    src={userView.avatar_url}*/}
                                         {/*    alt=""*/}
@@ -113,7 +118,7 @@ export default function ViewUserModal({isOpen, onClose, userView}: Props) {
                 )}
             </ModalContent>
         </Modal>
-
+        </>
     );
 }
 
