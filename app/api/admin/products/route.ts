@@ -24,28 +24,33 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        console.log("products",body)
-        if(body){
-            const itemProduct ={
+        console.log("products", body)
+        if (body) {
+            const itemProduct = {
                 name: body.name,
                 price: body.price,
                 description: body.description,
                 picture: body.picture,
                 status: body.status,
             }
-
-            const { data, error } = await ProductService.create(itemProduct)
-            const itemProductOption ={
-                id_product: data.id,
-                size: body.size,
-                color: body.color,
-                inventory: body.inventory,
+            const {data, error} = await ProductService.create(itemProduct)
+            {
+                body.variants.map(async (item, index) => {
+                    const itemProductOption = {
+                        id_product: data.id,
+                        size: item.size,
+                        color: item.color,
+                        inventory:item.inventory,
+                    }
+                    const {data: Option, error: OptionProduct} = await ProductOptionService.create(itemProductOption)
+                    console.log("------hien thi roi", data)
+                    console.log("----loi roi-", error)
+                    console.log("---------Data Option----", Option)
+                    console.log("---------Error Option----", OptionProduct)
+                })
             }
-            const { data:Option, error:OptionProduct } = await ProductOptionService.create(itemProductOption)
-            console.log("------hien thi roi",data)
-            console.log("----loi roi-",error)
-            console.log("---------Data Option----",Option)
-            console.log("---------Error Option----",OptionProduct)
+
+
         }
 
         //
@@ -58,7 +63,7 @@ export async function POST(req: Request) {
         // }
 
         return NextResponse.json("", {status: 201})
-    }catch (e) {
+    } catch (e) {
         console.log(e)
         return NextResponse.json(e.message, {status: 500})
     }

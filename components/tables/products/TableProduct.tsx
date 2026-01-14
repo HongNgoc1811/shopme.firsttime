@@ -19,11 +19,12 @@ import {
 } from "@heroui/react";
 import type {Selection} from '@nextui-org/react'
 import {supabaseClient} from "@/utils/supabase/client";
-import EditUserModal from "@/components/modal/users/update";
 import DeleteUserModal from "@/components/modal/users/delete";
 import ViewUserModal from "@/components/modal/users/view";
 import CreateProductModal from "@/components/modal/products/create";
 import EditProductModal from "@/components/modal/products/update";
+import DeleteModal from "@/components/modal/products/delete";
+import ViewProductModal from "@/components/modal/products/view";
 
 
 const columns = [
@@ -247,7 +248,7 @@ export default function TableProduct() {
                     id: item.id,
                     id_product: item.id_product,
                     color: item.color,
-                    size: JSON.parse(item.size), // convert size thành array
+                    size: item.size, // convert size thành array
                     inventory: item.inventory,
                     created_at: item.created_at,
                 });
@@ -348,7 +349,27 @@ export default function TableProduct() {
                 return (
                     <div className="flex flex-col">
                         {item.option?.map((item,index) => (
-                            <p key={index} className="text-bold text-tiny capitalize">{item.size[0]}</p>
+                            <p key={index} className="text-bold text-tiny capitalize">{item.size}</p>
+                        ))}
+
+                    </div>
+                );
+            case "color":
+
+                return (
+                    <div className="flex flex-col">
+                        {item.option?.map((item,index) => (
+                            <p key={index} className="text-bold text-tiny capitalize">{item.color}</p>
+                        ))}
+
+                    </div>
+                );
+            case "inventory":
+
+                return (
+                    <div className="flex flex-col">
+                        {item.option?.map((item,index) => (
+                            <p key={index} className="text-bold text-tiny capitalize">{item.inventory}</p>
                         ))}
 
                     </div>
@@ -587,16 +608,17 @@ export default function TableProduct() {
                 onClose={() => setIsOpenEdit(false)}
                 itemEdit={selectedItem}
             />
-            <DeleteUserModal
+            <DeleteModal
                 isOpen={isOpenDelete}
                 onClose={() => setIsOpenDelete(false)}
-                userDelete={selectedItem}
+                ItemDelete={selectedItem}
             />
-            <ViewUserModal
+            <ViewProductModal
                 isOpen={isOpenView}
                 onClose={() => setIsOpenView(false)}
-                userView={selectedItem}
+                itemView={selectedItem}
             />
+
         </>
     );
 }

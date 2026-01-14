@@ -17,7 +17,7 @@ export default function DeleteUserModal({isOpen, onClose, userDelete}) {
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader className="flex flex-col gap-1">Create User</ModalHeader>
+                        <ModalHeader className="flex flex-col gap-1">Delete User</ModalHeader>
                         <ModalBody>
                                  <p>Are you sure you want to delete <b>{userDelete?.name}</b>?</p>
 

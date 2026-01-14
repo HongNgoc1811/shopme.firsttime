@@ -18,6 +18,19 @@ export default function EditProductModal({isOpen, onClose, itemEdit}) {
     const [status, setStatus] = useState("");
     const [isVisible, setIsVisible] = useState(false);
 
+    type Variant = {
+        size: string;
+        color: string;
+        inventory: number;
+    };
+
+    const [variants, setVariants] = useState<Variant[]>([]);
+
+    const [variantForm, setVariantForm] = useState({
+        size: "",
+        color: "",
+        inventory: ""
+    });
     const toggleVisibility = () => setIsVisible(!isVisible);
     // Real-time password validation
     const handleSave = async () => {
@@ -28,9 +41,7 @@ export default function EditProductModal({isOpen, onClose, itemEdit}) {
             status: status,
             price: price,
             description: description,
-            size: size,
-            inventory: inventory,
-            color: color,
+            variants
 
         }
         const res = await fetch(`/api/admin/products/${itemEdit.id}`, {
@@ -42,17 +53,22 @@ export default function EditProductModal({isOpen, onClose, itemEdit}) {
         onClose()
     }
     useEffect(() => {
-        if(!itemEdit )return
-        setName(itemEdit.name)
-        // setPicture(itemEdit.picture)
-        setPrice(itemEdit.price)
-        setDescription(itemEdit.description)
-        setInventory(itemEdit.inventory)
-        setSize(itemEdit.size)
-        setColor(itemEdit.color)
-        setStatus(itemEdit.status)
-        console.log("edit",itemEdit)
+        if (!itemEdit) return;
+
+        setName(itemEdit.name);
+        setPrice(String(itemEdit.price));
+        setDescription(itemEdit.description);
+        setStatus(itemEdit.status);
+
+        setVariants(
+            itemEdit.option?.map((v) => ({
+                size: v.size,
+                color: v.color,
+                inventory: Number(v.inventory),
+            })) || []
+        );
     }, [itemEdit]);
+
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Edit User" size="3xl" className="h-160">
@@ -109,17 +125,33 @@ export default function EditProductModal({isOpen, onClose, itemEdit}) {
                                     }}
                                 />
 
-                                <div className="grid grid-cols-2 gap-4 ">
+                                <Select
+                                    isRequired
+                                    label="Status"
+                                    labelPlacement="outside"
+                                    name="status"
+                                    selectedKeys={status ? [status] : []}
+                                    onSelectionChange={(keys) =>
+                                        setStatus(Array.from(keys)[0] as string)
+                                    }
+                                    placeholder="Select status for product"
+                                >
+                                    <SelectItem key="available">Available</SelectItem>
+                                    <SelectItem key="low_stock">Low stock</SelectItem>
+                                    <SelectItem key="unavailable">Unavailable</SelectItem>
+                                </Select>
+
+
+                                <div className="grid grid-cols-3 gap-4 text-sm">
                                     <Select
-                                        isRequired
                                         label="Size"
-                                        labelPlacement="outside"
-                                        selectionMode="multiple"
-                                        selectedKeys={size}
-                                        placeholder="Select sizes"
-                                        onSelectionChange={(keys) => {
-                                            setSize((pre) => [...pre, keys.currentKey])
-                                        }  }
+                                        selectedKeys={variantForm.size ? [variantForm.size] : []}
+                                        onSelectionChange={(keys) =>
+                                            setVariantForm((prev) => ({
+                                                ...prev,
+                                                size: String(Array.from(keys)[0])
+                                            }))
+                                        }
                                     >
                                         <SelectItem key="S">S</SelectItem>
                                         <SelectItem key="M">M</SelectItem>
@@ -128,56 +160,64 @@ export default function EditProductModal({isOpen, onClose, itemEdit}) {
                                     </Select>
 
                                     <Input
-                                        isRequired
                                         label="Color"
-                                        labelPlacement="outside"
-                                        name="color"
-                                        placeholder="VD: Red , Black , Green"
-                                        value={color}
-                                        onValueChange={setColor}
-                                        errorMessage={({validationDetails}) => {
-                                            if (validationDetails.valueMissing) {
-                                                return "Please enter product size";
-                                            }
-                                        }}
-                                    />
-
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4 ">
-                                    <Select
-                                        isRequired
-                                        label="Status"
-                                        labelPlacement="outside"
-                                        name="status"
-                                        selectedKeys={status ? [status] : []}
-                                        onSelectionChange={(keys) =>
-                                            setStatus(Array.from(keys)[0] as string)
+                                        value={variantForm.color}
+                                        onValueChange={(value) =>
+                                            setVariantForm((prev) => ({ ...prev, color: value }))
                                         }
-                                        placeholder="Select status for product"
-                                    >
-                                        <SelectItem key="available">Available</SelectItem>
-                                        <SelectItem key="low_stock">Low stock</SelectItem>
-                                        <SelectItem key="unavailable">Unavailable</SelectItem>
-                                    </Select>
-
+                                    />
 
                                     <Input
-                                        isRequired
-                                        errorMessage={({validationDetails}) => {
-                                            if (validationDetails.valueMissing) {
-                                                return "Please enter product inventory";
-                                            }
-                                        }}
                                         label="Inventory"
-                                        value={inventory}
-                                        onValueChange={setInventory}
-                                        labelPlacement="outside"
-                                        name="inventory"
-                                        placeholder="Enter product inventory"
                                         type="number"
+                                        value={variantForm.inventory}
+                                        onValueChange={(value) =>
+                                            setVariantForm((prev) => ({ ...prev, inventory: value }))
+                                        }
                                     />
                                 </div>
+                                <Button
+                                    className="mt-4"
+                                    onPress={() => {
+                                        if (!variantForm.size || !variantForm.color || !variantForm.inventory)
+                                            return;
+                                        setVariants((prev) => [
+                                            ...prev,
+                                            {
+                                                size: variantForm.size,
+                                                color: variantForm.color,
+                                                inventory: Number(variantForm.inventory)
+                                            }
+                                        ]);
+                                        setVariantForm({ size: "", color: "", inventory: "" });
+                                    }}
+                                >
+                                    Add Variant
+                                </Button>
+
+                                <div className="mt-4 space-y-2 text-sm">
+                                    {variants.map((v, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex justify-between border p-2 rounded"
+                                        >
+                                        <span>
+                                            Size: <b>{v.size}</b> | Color: <b>{v.color}</b> | Inventory:{" "}<b>{v.inventory}</b>
+                                        </span>
+                                            <Button
+                                                color="danger"
+                                                size="sm"
+                                                onPress={() =>
+                                                    setVariants((prev) => prev.filter((_, i) => i !== index))
+                                                }
+                                            >
+                                                Remove
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+
+
 
                                 <div className="flex flex-col gap-1 ">
                                     <label className="text-sm font-medium">Picture</label>

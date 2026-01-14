@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import {UserService} from "@/services/users/user";
 import {ProductService} from "@/services/products/product";
+import {ProductOptionService} from "@/services/products/product_option";
 
 type Params = {
     params: { id: string }
@@ -23,18 +24,42 @@ export async function GET(_: Request, context:{params:Promise<{id:string}>}) {
 
 // PUT /api/users/:id
 export async function PUT(req: Request,context:{params:Promise<{id:string}>}) {
-    const body = await req.json()
-    const {id}= await context.params;
-    const { data, error } = await ProductService.update(Number(id),body)
-console.log(body)
-    if (error) {
-        return NextResponse.json(
-            { message: error.message },
-            { status: 500 }
-        )
-    }
+    try {
+        const {id}= await context.params;
+        const { error } = await ProductService.delete(Number(id))
+        console.log(error)
+        const body = await req.json()
+        console.log("products", body)
+        if (body) {
+            const itemProduct = {
+                name: body.name,
+                price: body.price,
+                description: body.description,
+                picture: body.picture,
+                status: body.status,
+            }
+            const {data, error} = await ProductService.create(itemProduct)
+            {
+                body.variants.map(async (item, index) => {
+                    const itemProductOption = {
+                        id_product: data.id,
+                        size: item.size,
+                        color: item.color,
+                        inventory:item.inventory,
+                    }
+                    const {data: Option, error: OptionProduct} = await ProductOptionService.create(itemProductOption)
+                    console.log("------hien thi roi", data)
+                    console.log("----loi roi-", error)
+                    console.log("---------Data Option----", Option)
+                    console.log("---------Error Option----", OptionProduct)
+                })
+            }
+        }
+        return NextResponse.json("data")
 
-    return NextResponse.json(data)
+    }catch(err) {
+        console.log(err)
+    }
 }
 
 // DELETE /api/users/:id

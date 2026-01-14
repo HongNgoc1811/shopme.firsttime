@@ -33,6 +33,21 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
     const [status, setStatus] = useState("");
     const [isVisible, setIsVisible] = useState(false);
 
+    type Variant = {
+        size: string;
+        color: string;
+        inventory: number;
+    };
+
+    const [variants, setVariants] = useState<Variant[]>([]);
+
+    const [variantForm, setVariantForm] = useState({
+        size: "",
+        color: "",
+        inventory: ""
+    });
+
+
     const toggleVisibility = () => setIsVisible(!isVisible);
     // Real-time password validation
     useEffect(() => {
@@ -46,11 +61,13 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
             status: status,
             price: price,
             description: description,
-            size: size,
-            inventory: inventory,
-            color: color,
+            // size: size,
+            // inventory: inventory,
+            // color: color,
+            variants
 
         }
+        console.log("hien du lieu dum--------",payload);
         const res = await fetch("/api/admin/products", {
             method: "POST",
             body: JSON.stringify(payload),
@@ -116,92 +133,98 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
                                     }}
                                 />
 
-                                <div className="grid grid-cols-2 gap-4 ">
+                                <Select
+                                    isRequired
+                                    label="Status"
+                                    labelPlacement="outside"
+                                    name="status"
+                                    selectedKeys={status ? [status] : []}
+                                    onSelectionChange={(keys) =>
+                                        setStatus(Array.from(keys)[0] as string)
+                                    }
+                                    placeholder="Select status for product"
+                                >
+                                    <SelectItem key="available">Available</SelectItem>
+                                    <SelectItem key="low_stock">Low stock</SelectItem>
+                                    <SelectItem key="unavailable">Unavailable</SelectItem>
+                                </Select>
+
+
+                                <div className="grid grid-cols-3 gap-4 text-sm">
                                     <Select
-                                        isRequired
                                         label="Size"
-                                        labelPlacement="outside"
-                                        selectionMode="multiple"
-                                        selectedKeys={size}
-                                        placeholder="Select sizes"
-                                        onSelectionChange={(keys) => {
-                                            setSize((pre) => [...pre, keys.currentKey])
-                                        }  }
+                                        selectedKeys={variantForm.size ? [variantForm.size] : []}
+                                        onSelectionChange={(keys) =>
+                                            setVariantForm((prev) => ({
+                                                ...prev,
+                                                size: String(Array.from(keys)[0])
+                                            }))
+                                        }
                                     >
                                         <SelectItem key="S">S</SelectItem>
                                         <SelectItem key="M">M</SelectItem>
                                         <SelectItem key="L">L</SelectItem>
                                         <SelectItem key="XL">XL</SelectItem>
                                     </Select>
-                                    {/*<Select*/}
-                                    {/*    isRequired*/}
-                                    {/*    label="Color"*/}
-                                    {/*    labelPlacement="outside"*/}
-                                    {/*    selectionMode="multiple"*/}
-                                    {/*    selectedKeys={color}*/}
-                                    {/*    className="max-w-xs"*/}
-                                    {/*    placeholder="Select color"*/}
-                                    {/*    onSelectionChange={(keys) =>*/}
-                                    {/*        setColor(keys as Set<string>)*/}
-                                    {/*    }*/}
-                                    {/*>*/}
-                                    {/*    <SelectItem key="S">S</SelectItem>*/}
-                                    {/*    <SelectItem key="M">M</SelectItem>*/}
-                                    {/*    <SelectItem key="L">L</SelectItem>*/}
-                                    {/*    <SelectItem key="XL">XL</SelectItem>*/}
-                                    {/*</Select>*/}
 
                                     <Input
-                                        isRequired
                                         label="Color"
-                                        labelPlacement="outside"
-                                        name="color"
-                                        placeholder="VD: Red , Black , Green"
-                                        value={color}
-                                        onValueChange={setColor}
-                                        errorMessage={({validationDetails}) => {
-                                            if (validationDetails.valueMissing) {
-                                                return "Please enter product size";
-                                            }
-                                        }}
-                                    />
-
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4 ">
-                                    <Select
-                                        isRequired
-                                        label="Status"
-                                        labelPlacement="outside"
-                                        name="status"
-                                        selectedKeys={status ? [status] : []}
-                                        onSelectionChange={(keys) =>
-                                            setStatus(Array.from(keys)[0] as string)
+                                        value={variantForm.color}
+                                        onValueChange={(value) =>
+                                            setVariantForm((prev) => ({ ...prev, color: value }))
                                         }
-                                        placeholder="Select status for product"
-                                    >
-                                        <SelectItem key="available">Available</SelectItem>
-                                        <SelectItem key="low_stock">Low stock</SelectItem>
-                                        <SelectItem key="unavailable">Unavailable</SelectItem>
-                                    </Select>
-
+                                    />
 
                                     <Input
-                                        isRequired
-                                        errorMessage={({validationDetails}) => {
-                                            if (validationDetails.valueMissing) {
-                                                return "Please enter product inventory";
-                                            }
-                                        }}
                                         label="Inventory"
-                                        value={inventory}
-                                        onValueChange={setInventory}
-                                        labelPlacement="outside"
-                                        name="inventory"
-                                        placeholder="Enter product inventory"
                                         type="number"
+                                        value={variantForm.inventory}
+                                        onValueChange={(value) =>
+                                            setVariantForm((prev) => ({ ...prev, inventory: value }))
+                                        }
                                     />
                                 </div>
+                                <Button
+                                    className="mt-4"
+                                    onPress={() => {
+                                        if (!variantForm.size || !variantForm.color || !variantForm.inventory)
+                                            return;
+                                        setVariants((prev) => [
+                                            ...prev,
+                                            {
+                                                size: variantForm.size,
+                                                color: variantForm.color,
+                                                inventory: Number(variantForm.inventory)
+                                            }
+                                        ]);
+                                        setVariantForm({ size: "", color: "", inventory: "" });
+                                    }}
+                                >
+                                    Add Variant
+                                </Button>
+
+                                <div className="mt-4 space-y-2 text-sm">
+                                    {variants.map((v, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex justify-between border p-2 rounded"
+                                        >
+                                        <span>
+                                            Size: <b>{v.size}</b> | Color: <b>{v.color}</b> | Inventory:{" "}<b>{v.inventory}</b>
+                                        </span>
+                                            <Button
+                                                color="danger"
+                                                size="sm"
+                                                onPress={() =>
+                                                    setVariants((prev) => prev.filter((_, i) => i !== index))
+                                                }
+                                            >
+                                                Remove
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+
 
                                 <div className="flex flex-col gap-1 ">
                                     <label className="text-sm font-medium">Picture</label>
