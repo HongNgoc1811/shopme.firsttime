@@ -26,10 +26,6 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
     const [price, setPrice] = useState("");
     const [description, setDescription] = useState("");
     const [size, setSize] = React.useState([]);
-    // const [size, setSize] = React.useState<Set<string>>(new Set());
-    // const [color, setColor] = React.useState<Set<string>>(new Set());
-    const [color, setColor] = useState("");
-    const [inventory, setInventory] = useState("");
     const [status, setStatus] = useState("");
     const [isVisible, setIsVisible] = useState(false);
 
@@ -47,8 +43,6 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
         inventory: ""
     });
 
-
-    const toggleVisibility = () => setIsVisible(!isVisible);
     // Real-time password validation
     useEffect(() => {
         console.log("size", size)
@@ -61,9 +55,6 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
             status: status,
             price: price,
             description: description,
-            // size: size,
-            // inventory: inventory,
-            // color: color,
             variants
 
         }

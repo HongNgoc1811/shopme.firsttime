@@ -7,7 +7,7 @@ const menu = [
     { label: "Dashboard", href: "/admin", icon: <User size={18} /> },
     { label: "User", href: "/admin/users", icon: <User size={18} /> },
     { label: "Product", href: "/admin/products", icon: <Package size={18} /> },
-    { label: "Order", href: "/order", icon: <ShoppingCart size={18} /> },
+    { label: "Order", href: "/admin/orders", icon: <ShoppingCart size={18} /> },
 ];
 
 export default function Sidebar() {

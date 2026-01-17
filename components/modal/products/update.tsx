@@ -10,11 +10,6 @@ export default function EditProductModal({isOpen, onClose, itemEdit}) {
     const [picturefile, setPictureFile] = useState<File[]>([]);
     const [price, setPrice] = useState("");
     const [description, setDescription] = useState("");
-    const [size, setSize] = React.useState([]);
-    // const [size, setSize] = React.useState<Set<string>>(new Set());
-    // const [color, setColor] = React.useState<Set<string>>(new Set());
-    const [color, setColor] = useState("");
-    const [inventory, setInventory] = useState("");
     const [status, setStatus] = useState("");
     const [isVisible, setIsVisible] = useState(false);
 
