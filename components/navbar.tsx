@@ -1,3 +1,4 @@
+"use client";
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -16,15 +17,12 @@ import NextLink from "next/link";
 import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
-import { ThemeSwitch } from "@/components/theme-switch";
 import {
-  TwitterIcon,
   GithubIcon,
-  DiscordIcon,
-  HeartFilledIcon,
   SearchIcon,
-  Logo,
 } from "@/components/icons";
+import {useRouter} from "next/navigation";
+import dynamic from "next/dynamic";
 
 export const Navbar = () => {
   const searchInput = (
@@ -48,13 +46,41 @@ export const Navbar = () => {
     />
   );
 
+    const ThemeSwitch = dynamic(
+        () => import("@/components/theme-switch").then(m => m.ThemeSwitch),
+        { ssr: false }
+    );
+
+    const router = useRouter();
+
+    const handleLogin = () => {
+        console.log("Login");
+
+        router.push("/auth/login");
+    }
+    const handleSignUp = () => {
+        console.log("Login");
+
+        router.push("/auth/signup");
+    }
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Logo />
-            <p className="font-bold text-inherit">ACME</p>
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-md">
+                  <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="h-5 w-5"
+                  >
+                      <path d="M3 6h18l-2 13H5L3 6zm5-3h8l1 2H7l1-2z" />
+                  </svg>
+              </div>
+              <div className="flex flex-col leading-tight">
+                  <span className="text-lg font-bold tracking-tight">ShopMe</span>
+              </div>
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
@@ -80,29 +106,27 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
-          <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
-            <TwitterIcon className="text-default-500" />
-          </Link>
-          <Link isExternal aria-label="Discord" href={siteConfig.links.discord}>
-            <DiscordIcon className="text-default-500" />
-          </Link>
-          <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-            <GithubIcon className="text-default-500" />
-          </Link>
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
-        <NavbarItem className="hidden md:flex">
-          <Button
-            isExternal
-            as={Link}
-            className="text-sm font-normal text-default-600 bg-default-100"
-            href={siteConfig.links.sponsor}
-            startContent={<HeartFilledIcon className="text-danger" />}
-            variant="flat"
-          >
-            Sponsor
-          </Button>
+        <NavbarItem className="hidden md:flex gap-5">
+            <div className="flex gap-3">
+                <Button className=" h-10 px-4 bg-gradient-to-br from-purple-500 to-pink-500 text-white"
+                    variant="solid"
+                        onPress={handleLogin}
+                >
+                    Login
+                </Button>
+                <div className="p-[2px] rounded-xl bg-gradient-to-br from-purple-500 to-pink-500">
+                    <Button
+                        className=" h-8 px-4 w-full rounded-[10px] bg-background"
+                        onPress={handleSignUp}
+                    >
+                        Sign up
+                    </Button>
+                </div>
+
+            </div>
         </NavbarItem>
       </NavbarContent>
 

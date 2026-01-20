@@ -33,14 +33,13 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html suppressHydrationWarning lang="en">
-        <body
-            className={clsx(
-                "min-h-screen text-foreground bg-background font-sans antialiased",
-                fontSans.variable,
-            )}
-        >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+            <div
+                className={clsx(
+                    "min-h-screen text-foreground bg-background font-sans antialiased",
+                    fontSans.variable,
+                )}
+            >
             <div className="flex h-screen flex-col">
                 <NavbarAdmin />
 
@@ -65,9 +64,8 @@ export default function RootLayout({
                     </Link>
                 </footer>
             </div>
-
+            </div>
         </Providers>
-        </body>
-        </html>
+
     );
 }
