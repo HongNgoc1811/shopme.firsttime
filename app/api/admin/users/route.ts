@@ -1,7 +1,7 @@
 import {NextResponse} from 'next/server'
 import {UserService} from "@/services/users/user";
 import {supabaseClient} from "@/utils/supabase/client";
-import {supabaseAdmin} from "@/utils/supabase/server";
+import {supabaseAdmin} from "@/utils/supabase/admin";
 
 // GET /api/users
 export async function GET() {

@@ -1,25 +1,39 @@
 "use client";
 
-import { Card, CardBody } from "@heroui/react";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { Mail, Lock, Chrome } from "lucide-react";
-import { useState } from "react";
+import {Card, CardBody} from "@heroui/react";
+import {Button} from "@heroui/button";
+import {Input} from "@heroui/input";
+import {Mail, Lock, Chrome} from "lucide-react";
+import {useState} from "react";
 import {EyeFilledIcon, EyeSlashFilledIcon} from "@heroui/shared-icons";
 import {useRouter} from "next/navigation";
 import NextLink from "next/link";
-import {signIn} from "next-auth/react";
+import {supabaseClient} from "@/utils/supabase/client";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
     const handleLogin = () => {
-        console.log({ email, password });
+        console.log({email, password});
         router.push("/");
 
     };
-
+    const origin =
+        typeof window !== "undefined"
+            ? window.location.origin : process.env.NEXT_PUBLIC_APP_URL
+    const LoginWithGoogle = () => {
+        supabaseClient.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo: `${origin}/api/auth/callback`,
+                queryParams:{
+                    access_type: "offline",
+                    prompt: "consent",
+                }
+            }
+        })
+    }
     const [isVisible, setIsVisible] = useState(false);
 
     const toggleVisibility = () => setIsVisible(!isVisible);
@@ -43,7 +57,7 @@ export default function LoginPage() {
                         placeholder="you@example.com"
                         value={email}
                         onValueChange={setEmail}
-                        startContent={<Mail size={18} />}
+                        startContent={<Mail size={18}/>}
                         variant="bordered"
                     />
 
@@ -59,9 +73,9 @@ export default function LoginPage() {
                                 onClick={toggleVisibility}
                             >
                                 {isVisible ? (
-                                    <EyeSlashFilledIcon  className="text-xl text-default-400 pointer-events-none" />
+                                    <EyeSlashFilledIcon className="text-xl text-default-400 pointer-events-none"/>
                                 ) : (
-                                    <EyeFilledIcon className="text-xl text-default-400 pointer-events-none" />
+                                    <EyeFilledIcon className="text-xl text-default-400 pointer-events-none"/>
                                 )}
                             </button>
                         }
@@ -84,9 +98,9 @@ export default function LoginPage() {
 
                     {/* Divider */}
                     <div className="flex items-center gap-3">
-                        <div className="h-px bg-gray-200 flex-1" />
+                        <div className="h-px bg-gray-200 flex-1"/>
                         <span className="text-xs text-gray-400">OR</span>
-                        <div className="h-px bg-gray-200 flex-1" />
+                        <div className="h-px bg-gray-200 flex-1"/>
                     </div>
 
                     {/* Google login */}
@@ -94,12 +108,8 @@ export default function LoginPage() {
                     <Button
                         variant="bordered"
                         className="w-full font-medium text-purple-500"
-                        startContent={<Chrome size={18} />}
-                        onPress={() =>
-                            signIn("google", {
-                                callbackUrl: "/admin",
-                            })
-                        }
+                        startContent={<Chrome size={18}/>}
+                        onPress={LoginWithGoogle}
                     >
                         Login with Google
                     </Button>

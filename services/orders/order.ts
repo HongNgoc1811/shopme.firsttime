@@ -44,7 +44,7 @@
 //
 // }
 
-import { supabaseAdmin } from "@/utils/supabase/server";
+import { supabaseAdmin } from "@/utils/supabase/admin";
 
 export const OrderService = {
         async getAll() {

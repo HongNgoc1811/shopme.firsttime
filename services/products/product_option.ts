@@ -1,4 +1,4 @@
-import {supabaseAdmin} from "@/utils/supabase/server";
+import {supabaseAdmin} from "@/utils/supabase/admin";
 import {NextResponse} from "next/server";
 
 const table = "product_option"
