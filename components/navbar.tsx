@@ -23,9 +23,38 @@ import {
 } from "@/components/icons";
 import {useRouter} from "next/navigation";
 import dynamic from "next/dynamic";
+import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User} from "@heroui/react";
+import {useEffect, useState} from "react";
+import {supabaseClient} from "@/utils/supabase/client";
+
 
 export const Navbar = () => {
-  const searchInput = (
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        supabaseClient.auth.getUser().then(({ data }) => {
+            setUser(data.user);
+        });
+
+        const { data: listener } =
+            supabaseClient.auth.onAuthStateChange((_event, session) => {
+                setUser(session?.user ?? null);
+            });
+
+        return () => {
+            listener.subscription.unsubscribe();
+        };
+    }, []);
+    const displayName =
+        user?.user_metadata?.full_name || user?.email;
+
+    const avatar =
+        user?.user_metadata?.avatar_url || "/avatardefault.png";
+
+    console.log("USER:", user);
+    console.log("METADATA:", user?.user_metadata);
+
+    const searchInput = (
     <Input
       aria-label="Search"
       classNames={{
@@ -63,7 +92,13 @@ export const Navbar = () => {
 
         router.push("/auth/signup");
     }
-  return (
+    const handleLogout = async () => {
+        await fetch("/api/auth/logout", { method: "POST" });
+
+        router.push("/auth/login");
+    };
+
+    return (
     <HeroUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
@@ -111,20 +146,50 @@ export const Navbar = () => {
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex gap-5">
             <div className="flex gap-3">
-                <Button className=" h-10 px-4 bg-gradient-to-br from-purple-500 to-pink-500 text-white"
-                    variant="solid"
-                        onPress={handleLogin}
-                >
-                    Login
-                </Button>
-                <div className="p-[2px] rounded-xl bg-gradient-to-br from-purple-500 to-pink-500">
-                    <Button
-                        className=" h-8 px-4 w-full rounded-[10px] bg-background"
-                        onPress={handleSignUp}
-                    >
-                        Sign up
-                    </Button>
-                </div>
+                {/*<Button className=" h-10 px-4 bg-gradient-to-br from-purple-500 to-pink-500 text-white"*/}
+                {/*    variant="solid"*/}
+                {/*        onPress={handleLogin}*/}
+                {/*>*/}
+                {/*    Login*/}
+                {/*</Button>*/}
+                {/*<div className="p-[2px] rounded-xl bg-gradient-to-br from-purple-500 to-pink-500">*/}
+                {/*    <Button*/}
+                {/*        className=" h-8 px-4 w-full rounded-[10px] bg-background"*/}
+                {/*        onPress={handleSignUp}*/}
+                {/*    >*/}
+                {/*        Sign up*/}
+                {/*    </Button>*/}
+                {/*</div>*/}
+
+
+                <Dropdown placement="bottom-end">
+                    <DropdownTrigger>
+                        <User
+                            as="button"
+                            avatarProps={{
+                                isBordered: true,
+                                src: avatar,
+                            }}
+                            name={displayName}
+                            description={user?.email}
+                            className="transition-transform text-purple-500 "
+                        />
+                    </DropdownTrigger>
+                    <DropdownMenu aria-label="Profile Actions" variant="flat">
+                        <DropdownItem key="profile" className="h-14 gap-2">
+                            <p className="font-semibold">Signed in as</p>
+                            <p className="font-semibold">{user?.email}</p>
+                        </DropdownItem>
+                        <DropdownItem key="settings">My Settings</DropdownItem>
+                        <DropdownItem key="analytics">Analytics</DropdownItem>
+                        <DropdownItem key="system">System</DropdownItem>
+                        <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
+                        <DropdownItem key="logout" color="danger" onPress={handleLogout}>
+                            Log Out
+                        </DropdownItem>
+                    </DropdownMenu>
+
+                </Dropdown>
 
             </div>
         </NavbarItem>

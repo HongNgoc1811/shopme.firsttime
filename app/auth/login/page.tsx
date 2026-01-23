@@ -14,11 +14,40 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
-    const handleLogin = () => {
-        console.log({email, password});
-        router.push("/");
+    // const handleLogin = async () => {
+    //     const payload ={email,password}
+    //     const res = await fetch("/api/auth/login",{
+    //         method: "POST",
+    //         body: JSON.stringify(payload),
+    //     })
+    //
+    //
+    // const data = await res.json();
+    //    if(data.code){
+    //        alert(data.code)
+    //    }
+    //     if(res.status === 200){
+    //        alert("Login successfull");
+    //        router.push("/");
+    //     }
+    //
+    // };
+    const handleLogin = async () => {
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email,
+                password,
+            });
 
+        if (error) {
+            alert(error.message);
+            return;
+        }
+        console.log("LOGIN OK:", data.session?.user);
+        router.push("/");
     };
+
+
     const origin =
         typeof window !== "undefined"
             ? window.location.origin : process.env.NEXT_PUBLIC_APP_URL

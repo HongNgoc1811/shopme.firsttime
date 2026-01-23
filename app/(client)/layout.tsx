@@ -10,7 +10,7 @@ export default function ClientLayout({
         <div className="relative flex flex-col min-h-screen">
             <Navbar />
 
-            <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+            <main className="container mx-auto max-w-7xl pt-2 px-6 flex-grow">
                 {children}
             </main>
 

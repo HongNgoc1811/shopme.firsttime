@@ -1,10 +1,10 @@
 "use client";
 
-import { Card, CardBody } from "@heroui/react";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { Mail, Lock, Chrome } from "lucide-react";
-import { useState } from "react";
+import {addToast, Card, CardBody, CardHeader} from "@heroui/react";
+import {Button} from "@heroui/button";
+import {Input} from "@heroui/input";
+import {Mail} from "lucide-react";
+import {useState} from "react";
 import {EyeFilledIcon, EyeSlashFilledIcon} from "@heroui/shared-icons";
 import {useRouter} from "next/navigation";
 import NextLink from "next/link";
@@ -14,24 +14,46 @@ export default function SignUpPage() {
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
     const [age, setAge] = useState("");
-
-
     const [isVisible, setIsVisible] = useState(false);
-
     const toggleVisibility = () => setIsVisible(!isVisible);
     const router = useRouter();
-    const handleSignUp = () => {
-        console.log({ email, password });
-        router.push("/auth/login");
-
-    };
+    const handleSignUp = async () => {
+        const payload = {
+            profile: {
+                name: name,
+                role: "User",
+                status: "active",
+                avatar_url: "/avatardefault.png",
+                age: age,
+                email: email,
+            },
+            auth: {
+                email: email,
+                password: password,
+            }
+        }
+        const res = await fetch("/api/auth/signup", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        })
+        const data = await res.json()
+        console.log("data", data)
+        console.log("res", res)
+        if (data.details) {
+            alert(data.details)
+        }
+        if (res.status === 200) {
+            alert(data)
+            router.push("/auth/login");
+        }
+    }
     return (
         <div className="min-h-screen flex items-center justify-center ">
             <Card className="w-full max-w-lg shadow-xl rounded-2xl">
                 <CardBody className=" h-140 w-100 p-8 space-y-6">
                     {/* Title */}
                     <div className="text-center space-y-2">
-                        <h1 className="text-2xl text-pink-500 font-bold">Sign Up  👋</h1>
+                        <h1 className="text-2xl text-pink-500 font-bold">Sign Up 👋</h1>
                         <p className="text-sm text-gray-500">
                             Sign Up to your account
                         </p>
@@ -43,7 +65,7 @@ export default function SignUpPage() {
                         placeholder="Enter your name"
                         value={name}
                         onValueChange={setName}
-                        startContent={<Mail size={18} />}
+                        startContent={<Mail size={18}/>}
                         variant="bordered"
                     />
                     <Input
@@ -52,7 +74,7 @@ export default function SignUpPage() {
                         placeholder="Enter your age"
                         value={age}
                         onValueChange={setAge}
-                        startContent={<Mail size={18} />}
+                        startContent={<Mail size={18}/>}
                         variant="bordered"
                     />
                     {/* Email */}
@@ -62,7 +84,7 @@ export default function SignUpPage() {
                         placeholder="you@example.com"
                         value={email}
                         onValueChange={setEmail}
-                        startContent={<Mail size={18} />}
+                        startContent={<Mail size={18}/>}
                         variant="bordered"
                     />
 
@@ -78,9 +100,9 @@ export default function SignUpPage() {
                                 onClick={toggleVisibility}
                             >
                                 {isVisible ? (
-                                    <EyeSlashFilledIcon  className="text-xl text-default-400 pointer-events-none" />
+                                    <EyeSlashFilledIcon className="text-xl text-default-400 pointer-events-none"/>
                                 ) : (
-                                    <EyeFilledIcon className="text-xl text-default-400 pointer-events-none" />
+                                    <EyeFilledIcon className="text-xl text-default-400 pointer-events-none"/>
                                 )}
                             </button>
                         }
