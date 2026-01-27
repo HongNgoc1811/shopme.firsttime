@@ -22,16 +22,16 @@ export default function Home() {
             <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-purple-500 to-pink-500 blur-[120px] opacity-30" />
 
             {/* HERO */}
-            <div className="relative z-10 mx-auto max-w-7xl px-6 py-24 grid lg:grid-cols-2 gap-16 items-center">
+            <div className="relative pt-9 z-10 mx-auto max-w-7xl px-6 py-24 grid lg:grid-cols-2 gap-16 items-center">
                 <div>
                     <div className="inline-flex items-center gap-2 rounded-full bg-default-100 px-4 py-1 text-sm mb-6">
                         <Star size={14} className="text-yellow-400" />
-                        <span>Top shop công nghệ 2026</span>
+                        <span>Top technology shops</span>
                     </div>
 
                     <h1 className={title({ size: "lg" })}>
                         Nâng cấp <span className={title({ color: "violet" })}>công nghệ</span>
-                        <br /> theo cách thông minh
+                        <br /> một cách thông minh
                     </h1>
 
                     <p className={subtitle({ class: "mt-6 max-w-xl" })}>

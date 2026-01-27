@@ -46,6 +46,11 @@ export default function ViewProductModal({ isOpen, onClose, itemView }) {
                                 <p>{itemView.price}</p>
                             </div>
 
+                            <div>
+                                <p className="font-semibold">Product Type</p>
+                                <p>{itemView.product_type}</p>
+                            </div>
+
                             {/* Status */}
                             <div>
                                 <p className="font-semibold">Status</p>

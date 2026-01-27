@@ -51,9 +51,6 @@ export const Navbar = () => {
     const avatar =
         user?.user_metadata?.avatar_url || "/avatardefault.png";
 
-    console.log("USER:", user);
-    console.log("METADATA:", user?.user_metadata);
-
     const searchInput = (
     <Input
       aria-label="Search"
@@ -86,11 +83,6 @@ export const Navbar = () => {
         console.log("Login");
 
         router.push("/auth/login");
-    }
-    const handleSignUp = () => {
-        console.log("Login");
-
-        router.push("/auth/signup");
     }
     const handleLogout = async () => {
         await fetch("/api/auth/logout", { method: "POST" });

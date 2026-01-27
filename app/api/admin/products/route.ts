@@ -31,6 +31,7 @@ export async function POST(req: Request) {
                 price: body.price,
                 description: body.description,
                 picture: body.picture,
+                product_type: body.product_type,
                 status: body.status,
             }
             const {data, error} = await ProductService.create(itemProduct)

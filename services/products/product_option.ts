@@ -11,6 +11,13 @@ export const ProductOptionService = {
             .order('created_at', {ascending: false})
         return {data, error}
     },
+    async getAllbyProductId(idItem) {
+        const {data, error} = await supabaseAdmin
+            .from(table)
+            .select('*,products(*)')
+            .eq(id, idItem)
+        return {data, error}
+    },
     async create(insertData: any) {
         const {data, error} = await supabaseAdmin
             .from(table)
@@ -22,7 +29,7 @@ export const ProductOptionService = {
     async getById(idItem: number) {
         const {data, error} = await supabaseAdmin
             .from(table)
-            .select('*')
+            .select('*,products(*)')
             .eq(id, idItem)
             .single()
         return {data, error}

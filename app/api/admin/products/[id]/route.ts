@@ -10,7 +10,7 @@ type Params = {
 // GET /api/users/:id
 export async function GET(_: Request, context:{params:Promise<{id:string}>}) {
     const {id}= await context.params;
-    const { data, error } = await ProductService.getById(Number(id))
+    const { data, error } = await ProductOptionService.getAllbyProductId(id)
 
     if (error) {
         return NextResponse.json(
@@ -36,6 +36,7 @@ export async function PUT(req: Request,context:{params:Promise<{id:string}>}) {
                 price: body.price,
                 description: body.description,
                 picture: body.picture,
+                product_type: body.product_type,
                 status: body.status,
             }
             const {data, error} = await ProductService.create(itemProduct)

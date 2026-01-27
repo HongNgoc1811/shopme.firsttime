@@ -25,6 +25,7 @@ import CreateProductModal from "@/components/modal/products/create";
 import EditProductModal from "@/components/modal/products/update";
 import DeleteModal from "@/components/modal/products/delete";
 import ViewProductModal from "@/components/modal/products/view";
+import {useProducts} from "@/hook/product/getProducts";
 
 
 const columns = [
@@ -36,6 +37,7 @@ const columns = [
     {name: "SIZE", uid: "size", sortable: true},
     {name: "COLOR", uid: "color", sortable: true},
     {name: "INVENTORY", uid: "inventory", sortable: true},
+    {name: "PRODUCT TYPE", uid: "product_type", sortable: true},
     {name: "STATUS", uid: "status", sortable: true},
     {name: "ACTIONS", uid: "actions"},
 ];
@@ -157,7 +159,7 @@ const statusColorMap = {
     low_stock: "warning",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "picture", "price", "description", "size", "color", "inventory", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["name", "picture", "price", "description", "size", "color", "inventory", "product_type", "status", "actions"];
 
 export default function TableProduct() {
     const [filterValue, setFilterValue] = React.useState("");
@@ -170,9 +172,6 @@ export default function TableProduct() {
     const [isOpenDelete, setIsOpenDelete] = useState(false);
     const [isOpenView, setIsOpenView] = useState(false);
 
-    useEffect(() => {
-        console.log('isOpen', isOpen);
-    }, [isOpen]);
     const [statusFilter, setStatusFilter] = useState<Selection>("all");
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
@@ -226,44 +225,10 @@ export default function TableProduct() {
             return sortDescriptor.direction === "descending" ? -cmp : cmp;
         });
     }, [sortDescriptor, items]);
-    async function reloadProduct() {
-        const res = await fetch("/api/admin/products", {
-            method: "GET",
-        })
-        const data = await res.json()
-        const listProduct = Object.values(
-            data?.reduce((acc: any, item: any) => {
-                const productId = item.products.id;
-
-                // nếu product chưa tồn tại
-                if (!acc[productId]) {
-                    acc[productId] = {
-                        ...item.products,
-                        option: [],
-                    };
-                }
-
-                // push option
-                acc[productId].option.push({
-                    id: item.id,
-                    id_product: item.id_product,
-                    color: item.color,
-                    size: item.size, // convert size thành array
-                    inventory: item.inventory,
-                    created_at: item.created_at,
-                });
-
-                return acc;
-            }, {})
-        );
-
-        console.log(listProduct);
-        setListItems(listProduct)
-    }
-
+    const {products} = useProducts()
     useEffect(() => {
         (async () => {
-            reloadProduct()
+            setListItems(products)
         })()
         const supabase = supabaseClient;
         const channel = supabase
@@ -280,17 +245,17 @@ export default function TableProduct() {
 
                     // INSERT
                     if (payload.eventType === "INSERT") {
-                        reloadProduct()
+                        setListItems(products)
                     }
 
                     // UPDATE
                     if (payload.eventType === "UPDATE") {
-                        reloadProduct()
+                        setListItems(products)
                     }
 
                     // DELETE
                     if (payload.eventType === "DELETE") {
-                        reloadProduct()
+                        setListItems(products)
                     }
                 }
             )
@@ -309,17 +274,17 @@ export default function TableProduct() {
 
                     // INSERT
                     if (payload.eventType === "INSERT") {
-                        reloadProduct()
+                        setListItems(products)
                     }
 
                     // UPDATE
                     if (payload.eventType === "UPDATE") {
-                        reloadProduct()
+                        setListItems(products)
                     }
 
                     // DELETE
                     if (payload.eventType === "DELETE") {
-                        reloadProduct()
+                        setListItems(products)
                     }
                 }
             )
@@ -328,7 +293,7 @@ export default function TableProduct() {
             supabase.removeChannel(channel);
             supabase.removeChannel(channel_productOption);
         };
-    }, []);
+    }, [products]);
 
 
     const renderCell = React.useCallback((item, columnKey) => {
@@ -348,7 +313,7 @@ export default function TableProduct() {
 
                 return (
                     <div className="flex flex-col">
-                        {item.option?.map((item,index) => (
+                        {item.option?.map((item, index) => (
                             <p key={index} className="text-bold text-tiny capitalize">{item.size}</p>
                         ))}
 
@@ -358,7 +323,7 @@ export default function TableProduct() {
 
                 return (
                     <div className="flex flex-col">
-                        {item.option?.map((item,index) => (
+                        {item.option?.map((item, index) => (
                             <p key={index} className="text-bold text-tiny capitalize">{item.color}</p>
                         ))}
 
@@ -368,12 +333,13 @@ export default function TableProduct() {
 
                 return (
                     <div className="flex flex-col">
-                        {item.option?.map((item,index) => (
+                        {item.option?.map((item, index) => (
                             <p key={index} className="text-bold text-tiny capitalize">{item.inventory}</p>
                         ))}
 
                     </div>
                 );
+
             case "status":
                 return (
                     <Chip className="capitalize" color={statusColorMap[item.status.toLowerCase()]} size="sm"

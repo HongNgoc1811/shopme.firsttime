@@ -27,7 +27,7 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
     const [description, setDescription] = useState("");
     const [size, setSize] = React.useState([]);
     const [status, setStatus] = useState("");
-    const [isVisible, setIsVisible] = useState(false);
+    const [product_type, setProductType] = useState("");
 
     type Variant = {
         size: string;
@@ -55,6 +55,7 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
             status: status,
             price: price,
             description: description,
+            product_type: product_type,
             variants
 
         }
@@ -140,6 +141,21 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
                                     <SelectItem key="unavailable">Unavailable</SelectItem>
                                 </Select>
 
+                                <Select
+                                    isRequired
+                                    label="Product Type"
+                                    labelPlacement="outside"
+                                    name="product_type"
+                                    selectedKeys={product_type ? [product_type] : []}
+                                    onSelectionChange={(keys) =>
+                                        setProductType(Array.from(keys)[0] as string)
+                                    }
+                                    placeholder="Select type for product"
+                                >
+                                    <SelectItem key="laptop">Laptop</SelectItem>
+                                    <SelectItem key="smartphone">Smart Phone</SelectItem>
+                                    <SelectItem key="accessories">Accessories</SelectItem>
+                                </Select>
 
                                 <div className="grid grid-cols-3 gap-4 text-sm">
                                     <Select
@@ -178,12 +194,12 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
                                 <Button
                                     className="mt-4"
                                     onPress={() => {
-                                        if (!variantForm.size || !variantForm.color || !variantForm.inventory)
+                                        if ( !variantForm.color || !variantForm.inventory)
                                             return;
                                         setVariants((prev) => [
                                             ...prev,
                                             {
-                                                size: variantForm.size,
+                                                size: variantForm.size ||null,
                                                 color: variantForm.color,
                                                 inventory: Number(variantForm.inventory)
                                             }
@@ -200,9 +216,14 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
                                             key={index}
                                             className="flex justify-between border p-2 rounded"
                                         >
-                                        <span>
-                                            Size: <b>{v.size}</b> | Color: <b>{v.color}</b> | Inventory:{" "}<b>{v.inventory}</b>
-                                        </span>
+                                        {/*<span>*/}
+                                        {/*    Size: <b>{v.size ?? "N/A"}</b> | Color: <b>{v.color}</b> | Inventory:{" "}<b>{v.inventory}</b>*/}
+                                        {/*</span>*/}
+                                            <span>
+                                                {v.size && <>Size: <b>{v.size}</b> | </>}
+                                                Color: <b>{v.color}</b> | Inventory: <b>{v.inventory}</b>
+                                            </span>
+
                                             <Button
                                                 color="danger"
                                                 size="sm"

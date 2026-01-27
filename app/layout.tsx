@@ -11,12 +11,13 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
         <body
+            suppressHydrationWarning
             className={clsx(
                 "min-h-screen text-foreground bg-background font-sans antialiased",
                 fontSans.variable,
             )}
         >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+        <Providers  themeProps={{ attribute: "class", defaultTheme: "dark" }}>
             {children}
         </Providers>
         </body>
