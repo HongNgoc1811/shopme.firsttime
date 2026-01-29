@@ -16,10 +16,10 @@ export const siteConfig = {
       label: "Phụ kiện",
       href: "/category/accessories",
     },
-    {
-      label: "About",
-      href: "/about",
-    },
+    // {
+    //   label: "About",
+    //   href: "/about",
+    // },
   ],
   navMenuItems: [
     {

@@ -116,14 +116,18 @@ export default function CreateProductModal({isOpen, onClose}: Props) {
                                     onValueChange={setDescription}
                                     name="description"
                                     placeholder="Enter product description"
-                                    minRows={4}      //  chiều cao ban đầu
+                                    minRows={4}
                                     maxRows={8}
-                                    errorMessage={({validationDetails}) => {
+                                    classNames={{
+                                        input: "max-h-[200px] overflow-y-auto"
+                                    }}
+                                    errorMessage={({ validationDetails }) => {
                                         if (validationDetails.valueMissing) {
                                             return "Please enter product description";
                                         }
                                     }}
                                 />
+
 
                                 <Select
                                     isRequired
