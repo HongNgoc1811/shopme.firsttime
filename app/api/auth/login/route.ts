@@ -1,10 +1,12 @@
 import {supabaseAdmin} from "@/utils/supabase/admin";
 import {NextResponse} from "next/server";
+import {createSupabaseServer} from "@/utils/supabase/server";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        const {data, error} = await supabaseAdmin.auth.signInWithPassword(body)
+        const sp= await createSupabaseServer()
+        const {data, error} = await sp.auth.signInWithPassword(body)
         if (error) return NextResponse.json(error, {status: 500})
         return NextResponse.json(data.user, {status: 200})
 

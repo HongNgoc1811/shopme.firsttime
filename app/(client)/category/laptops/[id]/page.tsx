@@ -112,7 +112,7 @@ export default function LaptopDetailPage() {
     const [product, setProduct] = useState<Product | null>(null);
     const [selectedOption, setSelectedOption] = useState<ProductOption | null>(null);
     const [loading, setLoading] = useState(true);
-
+    const [isAdding, setIsAdding] = useState(false); // Thêm state loading cho nút bấm
     useEffect(() => {
         async function reloadProduct() {
             try {
@@ -172,6 +172,40 @@ export default function LaptopDetailPage() {
         </div>
     );
 
+    const handleAddToCart = async () => {
+        // 1. Kiểm tra đầu vào
+        if (!selectedOption) {
+            alert("Vui lòng chọn phiên bản màu sắc/cấu hình!");
+            return;
+        }
+        if (selectedOption.inventory <= 0) {
+            alert("Sản phẩm hiện đang hết hàng. Vui lòng chọn màu khác!");
+            return;
+        }
+        try {
+            setIsAdding(true); // Bắt đầu trạng thái loading
+            // 2. Gọi API thêm vào giỏ hàng
+            const res = await fetch("/api/cart", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    product_option_id: selectedOption.id,
+                    quantity: 1,
+                }),
+            });
+            // 3. Xử lý kết quả trả về từ API
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.message || "Không thể thêm vào giỏ hàng");
+            }
+            // 4. Chuyển hướng khi thành công
+            router.push("/shoppingcart");
+        } catch (error: any) {
+            alert(error.message);
+        } finally {
+            setIsAdding(false); // Kết thúc trạng thái loading
+        }
+    };
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-[#020203] py-3 px- sm:px-6 transition-colors duration-500">
             <div className="max-w-6xl mx-auto">
@@ -281,6 +315,7 @@ export default function LaptopDetailPage() {
                                 className="flex-1 h-16 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black text-md shadow-[0_10px_40px_rgba(168,85,247,0.3)] hover:shadow-[0_10px_40px_rgba(168,85,247,0.5)] transition-all active:scale-95"
                                 radius="lg"
                                 startContent={<ShoppingCart size={24} strokeWidth={3} />}
+                                onPress={handleAddToCart}
                             >
                                 THÊM VÀO GIỎ
                             </Button>
