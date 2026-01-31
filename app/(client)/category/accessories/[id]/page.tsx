@@ -33,6 +33,7 @@ export default function AccessoriesDetailPage() {
     const [product, setProduct] = useState<Product | null>(null);
     const [selectedOption, setSelectedOption] = useState<ProductOption | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isAdding, setIsAdding] = useState(false); // Thêm state loading cho nút bấm
 
     useEffect(() => {
         async function reloadProduct() {
@@ -76,7 +77,56 @@ export default function AccessoriesDetailPage() {
         }
         if (id) reloadProduct();
     }, [id]);
+    if (loading) return (
+        <div className="h-screen w-full flex items-center justify-center bg-white dark:bg-[#020203]">
+            <div className="flex flex-col items-center gap-4">
+                <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-purple-500 font-medium animate-pulse">Loading...</p>
+            </div>
+        </div>
+    );
 
+    if (!product) return (
+        <div className="h-screen flex flex-col items-center justify-center bg-white dark:bg-[#020203]">
+            <h2 className="text-2xl font-bold mb-4">Không tìm thấy sản phẩm</h2>
+            <Button onPress={() => router.back()}>Quay lại</Button>
+        </div>
+    );
+
+    const handleAddToCart = async () => {
+        // 1. Kiểm tra đầu vào
+        if (!selectedOption) {
+            alert("Vui lòng chọn phiên bản màu sắc/cấu hình!");
+            return;
+        }
+        if (selectedOption.inventory <= 0) {
+            alert("Sản phẩm hiện đang hết hàng. Vui lòng chọn màu khác!");
+            return;
+        }
+        try {
+            setIsAdding(true); // Bắt đầu trạng thái loading
+            // 2. Gọi API thêm vào giỏ hàng
+            const res = await fetch("/api/cart", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    product_option_id: selectedOption.id,
+                    quantity: 1,
+                }),
+            });
+            // 3. Xử lý kết quả trả về từ API
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.message || "Không thể thêm vào giỏ hàng");
+            }
+            // 4. Chuyển hướng khi thành công
+            router.push("/shoppingcart");
+        } catch (error: any) {
+            alert(error.message);
+        } finally {
+            setIsAdding(false); // Kết thúc trạng thái loading
+        }
+    };
     if (loading) return (
         <div className="h-screen w-full flex items-center justify-center bg-white dark:bg-[#020203]">
             <div className="flex flex-col items-center gap-4">
@@ -202,6 +252,7 @@ export default function AccessoriesDetailPage() {
                                 className="flex-1 h-16 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black text-md shadow-[0_10px_40px_rgba(168,85,247,0.3)] hover:shadow-[0_10px_40px_rgba(168,85,247,0.5)] transition-all active:scale-95"
                                 radius="lg"
                                 startContent={<ShoppingCart size={24} strokeWidth={3} />}
+                                onPress={handleAddToCart}
                             >
                                 THÊM VÀO GIỎ
                             </Button>

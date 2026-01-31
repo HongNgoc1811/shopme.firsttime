@@ -2,6 +2,9 @@
 
 import { Avatar, Button, Divider } from "@heroui/react";
 import { User, Package, ShoppingCart } from "lucide-react";
+import UserDropdown from "@/components/users/UserDropdown";
+import {useState} from "react";
+import {useRouter} from "next/navigation";
 
 const menu = [
     { label: "Dashboard", href: "/admin", icon: <User size={18} /> },
@@ -11,6 +14,18 @@ const menu = [
 ];
 
 export default function Sidebar() {
+    const [user, setUser] = useState<any>(null);
+    const displayName =
+        user?.user_metadata?.full_name || user?.email;
+    const avatar =
+        user?.user_metadata?.avatar_url || "/avatardefault.png";
+    const router = useRouter();
+    const handleLogout = async () => {
+        await fetch("/api/auth/logout", { method: "POST" });
+
+        router.push("/auth/login");
+    };
+
     return (
         <aside className="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col shadow-lg bg-background">
             <div className="flex flex-1 flex-col overflow-hidden p-4">
@@ -51,11 +66,12 @@ export default function Sidebar() {
                 <Divider />
 
                 <div className="flex items-center gap-3">
-                    <Avatar src="https://i.pravatar.cc/150" name="Ngoc" size="sm" />
-                    <div className="flex flex-col">
-                        <span className="text-sm font-semibold">Nguyễn Ngọc</span>
-                        <span className="text-xs text-default-500">admin@admin.com</span>
-                    </div>
+                    <UserDropdown
+                        user={user}
+                        avatar={avatar}
+                        displayName={displayName}
+                        onLogout={handleLogout}
+                    />
                 </div>
 
                 <p className="text-center text-xs text-default-400">ShopMe</p>

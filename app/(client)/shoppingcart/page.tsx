@@ -1,7 +1,8 @@
 'use client'
 import React, {useEffect, useState} from "react";
 import { Image, Button, Card, CardBody, Divider, Input } from "@heroui/react";
-import { MinusIcon, PlusIcon, TrashIcon } from "lucide-react"; // Cần cài lucide-react
+import {ChevronLeft, MinusIcon, PlusIcon, TrashIcon} from "lucide-react";
+import {useRouter} from "next/navigation"; // Cần cài lucide-react
 interface CartItem {
     id: number
     quantity: number
@@ -22,6 +23,12 @@ export default function ShoppingCart() {
     // Dữ liệu mẫu trong giỏ hàng
     const [cartItems, setCartItems] = useState<CartItem[]>([])
     const [loading, setLoading] = useState(true)
+    const router = useRouter()
+    const shopping =() =>{
+        router.push("/category/laptops")
+    }
+    const formatPrice = (price: number) =>
+        price.toLocaleString("vi-VN")
     const subtotal = cartItems.reduce(
         (acc, item) =>
             acc + item.product_option.product.price * item.quantity,
@@ -30,7 +37,7 @@ export default function ShoppingCart() {
     useEffect(() => {
         console.log('cartItems', cartItems)
     }, [cartItems]);
-    const shipping = 50000
+    const shipping = 0
     const total = subtotal + shipping
     useEffect(() => {
         async function loadCart() {
@@ -107,8 +114,15 @@ export default function ShoppingCart() {
         setCartItems(prev => prev.filter(i => i.id !== item.id))
     }
     return (
-        <section className="min-h-screen py-24 px-6 bg-white dark:bg-[#020203] transition-colors">
+        <section className="min-h-screen py-4 px-6 bg-white dark:bg-[#020203] transition-colors">
             <div className="max-w-6xl mx-auto">
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-2 text-gray-500 hover:text-purple-500 transition-colors mb-4 group"
+                >
+                    <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform"/>
+                    <span>Quay lại </span>
+                </button>
                 <h1 className="text-3xl font-bold mb-10 flex items-center gap-3">
                     Giỏ hàng của bạn
                     <span className="text-sm font-normal text-gray-500">({cartItems.length} sản phẩm)</span>
@@ -133,14 +147,14 @@ export default function ShoppingCart() {
                                             </p>
                                         </div>
                                         <p className="font-bold text-pink-500">
-                                            {item.product_option.product.price.toLocaleString()}đ
+                                            {formatPrice(item.product_option.product.price)}đ
                                         </p>
                                     </div>
 
                                     <div className="flex justify-between items-center mt-4">
                                         {/* Bộ tăng giảm số lượng */}
                                         <div className="flex items-center gap-3 bg-gray-100 dark:bg-white/5 rounded-full px-3 py-1">
-                                            <button onClick={() => decreaseQty(item)}  className="p-1 hover:text-purple-500"><MinusIcon size={16} /></button>
+                                            <button disabled={item.quantity <= 1} onClick={() => decreaseQty(item)}  className="p-1 hover:text-purple-500"><MinusIcon size={16} /></button>
                                             <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
                                             <button onClick={() => increaseQty(item)} className="p-1 hover:text-purple-500"><PlusIcon size={16} /></button>
                                         </div>
@@ -162,17 +176,17 @@ export default function ShoppingCart() {
                                 <div className="space-y-3">
                                     <div className="flex justify-between text-gray-500">
                                         <span>Tạm tính</span>
-                                        <span className="text-gray-900 dark:text-white">{subtotal.toLocaleString()}đ</span>
+                                        <span className="text-gray-900 dark:text-white">{formatPrice(subtotal)}đ</span>
                                     </div>
                                     <div className="flex justify-between text-gray-500">
                                         <span>Phí vận chuyển</span>
-                                        <span className="text-gray-900 dark:text-white">{shipping.toLocaleString()}đ</span>
+                                        <span className="text-gray-900 dark:text-white">{formatPrice(shipping)}đ</span>
                                     </div>
                                     <Divider className="my-2 dark:bg-white/10" />
                                     <div className="flex justify-between text-xl font-bold">
                                         <span>Tổng cộng</span>
                                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-                                            {total.toLocaleString()}đ
+                                            {formatPrice(total)}đ
                                         </span>
                                     </div>
                                 </div>
@@ -187,7 +201,7 @@ export default function ShoppingCart() {
                                     <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold h-12 rounded-xl shadow-lg shadow-purple-500/20">
                                         THANH TOÁN NGAY
                                     </Button>
-                                    <Button variant="light" className="w-full text-gray-500 font-medium h-12" radius="lg">
+                                    <Button onPress={shopping} variant="light" className="w-full text-gray-500 font-medium h-12" radius="lg">
                                         Tiếp tục mua sắm
                                     </Button>
                                 </div>

@@ -22,12 +22,22 @@ import {
   SearchIcon,
 } from "@/components/icons";
 import {useRouter} from "next/navigation";
-import dynamic from "next/dynamic";
-import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User} from "@heroui/react";
 import {useEffect, useState} from "react";
 import {supabaseClient} from "@/utils/supabase/client";
 import {ShoppingCart} from "lucide-react";
-import {SearchInput} from "@/components/users/SearchInput";
+import dynamic from "next/dynamic";
+
+const SearchInput = dynamic(
+    () =>
+        import("@/components/users/SearchInput").then(
+            (m) => m.SearchInput
+        ),
+    { ssr: false }
+);
+const UserDropdown = dynamic(
+    () => import("@/components/users/UserDropdown"),
+    { ssr: false }
+);
 
 export const Navbar = () => {
     const [user, setUser] = useState<any>(null);
@@ -147,35 +157,12 @@ export const Navbar = () => {
           </NavbarItem>
         <NavbarItem className="hidden md:flex gap-5">
             <div className="flex gap-3">
-                <Dropdown placement="bottom-end">
-                    <DropdownTrigger>
-                        <User
-                            as="button"
-                            avatarProps={{
-                                isBordered: true,
-                                src: avatar,
-                            }}
-                            name={displayName}
-                            description={user?.email}
-                            className="transition-transform text-purple-500 "
-                        />
-                    </DropdownTrigger>
-                    <DropdownMenu aria-label="Profile Actions" variant="flat">
-                        <DropdownItem key="profile" className="h-14 gap-2">
-                            <p className="font-semibold">Signed in as</p>
-                            <p className="font-semibold">{user?.email}</p>
-                        </DropdownItem>
-                        <DropdownItem key="settings">My Settings</DropdownItem>
-                        <DropdownItem key="analytics">Analytics</DropdownItem>
-                        <DropdownItem key="system">System</DropdownItem>
-                        <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
-                        <DropdownItem key="logout" color="danger" onPress={handleLogout}>
-                            Log Out
-                        </DropdownItem>
-                    </DropdownMenu>
-
-                </Dropdown>
-
+                <UserDropdown
+                    user={user}
+                    avatar={avatar}
+                    displayName={displayName}
+                    onLogout={handleLogout}
+                />
             </div>
         </NavbarItem>
       </NavbarContent>
