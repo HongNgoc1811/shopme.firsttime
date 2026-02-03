@@ -7,19 +7,7 @@ export async function POST(req: Request) {
         const body = await req.json()
         console.log("user", body)
         let dataUser;
-        if (body.profile) {
-            const itemProfile = {
-                ...body.profile,
-            }
-            const {data, error} = await UserService.create(itemProfile)
-            // console.log("------hien thi roi",data)
-            // console.log("----loi roi-",error)
-            // console.log("---------profile----",itemProfile)
-            if (data) {
-                dataUser = data;
-            }
-            if (error) return NextResponse.json(error, {status: 500})
-        }
+
         if (body.auth) {
             const {data: dataAuth, error: errorAuth} = await supabaseAdmin.auth.admin.createUser({
                 email: body.auth.email,
@@ -30,12 +18,28 @@ export async function POST(req: Request) {
                     avatar_url: body.profile.avatar_url,
                     role: body.profile.role,
                 },
+
             });
+            dataUser =dataAuth
             // console.log("---loi auth", errorAuth)
-            // console.log("----hien thi auth",dataAuth)
+            console.log("----hien thi auth",dataAuth)
             if (errorAuth) return NextResponse.json(errorAuth, {status: 500})
         }
-
+        if (body.profile) {
+            const itemProfile = {
+                ...body.profile,
+                uid_user:dataUser.user.id
+            }
+            console.log(itemProfile)
+            const {data, error} = await UserService.create(itemProfile)
+            // console.log("------hien thi roi",data)
+            // console.log("----loi roi-",error)
+            // console.log("---------profile----",itemProfile)
+            if (data) {
+                dataUser = data;
+            }
+            if (error) return NextResponse.json(error, {status: 500})
+        }
         return NextResponse.json(dataUser, {status: 200})
 
     } catch (e) {

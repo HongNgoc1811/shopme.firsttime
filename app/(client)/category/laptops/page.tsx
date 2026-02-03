@@ -41,7 +41,7 @@ export default function LaptopPage() {
                                 {/* Badge giảm giá hoặc New */}
                                 <div className="absolute top-3 right-3 z-10">
                                 <span className="bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-lg border border-white/20">
-                                    NEW ARRIVAL
+                                    SALE
                                 </span>
                                 </div>
 

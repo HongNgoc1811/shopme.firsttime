@@ -40,6 +40,14 @@ export const UserService = {
             .delete()
             .eq('id',id)
         return{error}
-    }
+    },
+    async getByUid(uid_user: string) {
+        const {data, error} = await supabaseAdmin
+            .from('users')
+            .select('*')
+            .eq('uid_user', uid_user)
+            .single()
+        return {data, error}
+    },
 
 }

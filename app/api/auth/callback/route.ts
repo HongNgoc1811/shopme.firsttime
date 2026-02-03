@@ -26,10 +26,11 @@ export async function GET(request: Request) {
             avatar_url: user.user_metadata.avatar_url,
             age: null,
             email: user.email,
-
+            uid_user: sessionData.user.id,
     }
     const { data: dataUser, error: errorUser } = await UserService.create(itemCreatUserconst)
     console.log("------hien thi roi",errorUser)
+    console.log("------hien thi roi--------",dataUser)
     if (error) {
         console.error("Exchange error:", error);
         return NextResponse.redirect(`${origin}/auth/auth-code-error`);

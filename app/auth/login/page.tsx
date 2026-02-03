@@ -33,18 +33,25 @@ export default function LoginPage() {
     //
     // };
     const handleLogin = async () => {
-        const { data, error } =
-            await supabaseClient.auth.signInWithPassword({
-                email,
-                password,
-            });
-
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password,
+        });
         if (error) {
             alert(error.message);
             return;
         }
-        console.log("LOGIN OK:", data.session?.user);
-        router.push("/");
+        // Lấy thông tin role sau khi login
+        const { data: profile } = await supabaseClient
+            .from('users')
+            .select('role')
+            .eq('id', data.user.id)
+            .single();
+        if (profile?.role === 'Admin') {
+            router.push("/admin/dashboard");
+        } else {
+            router.push("/");
+        }
     };
 
 
