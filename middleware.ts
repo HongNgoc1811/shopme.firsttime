@@ -22,23 +22,23 @@ export async function middleware(request: NextRequest) {
         }
     )
 
-    // 1️⃣ Lấy user từ Supabase
+    //  Lấy user từ Supabase
     const { data: { user } } = await supabase.auth.getUser()
-    // ❌ Chưa đăng nhập → login
+    // Chưa đăng nhập → login
     if (!user) {
         if (!pathname.startsWith('/auth')) {
             return NextResponse.redirect(new URL('/auth/login', request.url))
         }
         return response
     }
-    // 2️ Lấy role từ DB
+    //  Lấy role từ DB
     const { data: userDb } = await UserService.getByUid(user.id)
     const isAdmin = userDb?.role === 'Admin'
-    // 3️ Nếu là Admin nhưng KHÔNG ở /admin → đẩy vào /admin
+    //  Nếu là Admin nhưng KHÔNG ở /admin → đẩy vào /admin
     if (isAdmin && !pathname.startsWith('/admin')) {
         return NextResponse.redirect(new URL('/admin', request.url))
     }
-    // 4️ Nếu KHÔNG phải Admin nhưng vào /admin → đá về /
+    // Nếu KHÔNG phải Admin nhưng vào /admin → đá về /
     if (!isAdmin && pathname.startsWith('/admin')) {
         return NextResponse.redirect(new URL('/', request.url))
     }
@@ -46,6 +46,6 @@ export async function middleware(request: NextRequest) {
 }
 export const config = {
     matcher: [
-        '/((?!auth|_next|favicon.ico|api/auth).*)',
+        '/((?!auth|_next|favicon.ico|api).*)',
     ],
 }

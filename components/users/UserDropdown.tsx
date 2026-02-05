@@ -36,10 +36,7 @@ export default function UserDropdown({
                         <p className="font-semibold">Signed in as</p>
                         <p className="font-semibold">{user?.email}</p>
                     </DropdownItem>
-                    <DropdownItem key="settings">My Settings</DropdownItem>
-                    <DropdownItem key="analytics">Analytics</DropdownItem>
-                    <DropdownItem key="system">System</DropdownItem>
-                    <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
+                    {/*<DropdownItem key="settings">My Settings</DropdownItem>*/}
                     <DropdownItem key="logout" color="danger" onPress={onLogout}>
                         Log Out
                     </DropdownItem>

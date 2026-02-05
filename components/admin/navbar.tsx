@@ -11,7 +11,6 @@ import {
 import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
-import NextLink from "next/link";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -58,7 +57,6 @@ export const NavbarAdmin = () => {
                 <NavbarItem className="hidden sm:flex gap-2">
                     <ThemeSwitch />
                 </NavbarItem>
-                <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
 
             </NavbarContent>
 

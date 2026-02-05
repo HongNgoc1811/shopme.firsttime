@@ -8,10 +8,7 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
-import { Button } from "@heroui/button";
-import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
-import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
@@ -19,7 +16,6 @@ import clsx from "clsx";
 import { siteConfig } from "@/config/site";
 import {
   GithubIcon,
-  SearchIcon,
 } from "@/components/icons";
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
@@ -62,34 +58,12 @@ export const Navbar = () => {
     const avatar =
         user?.user_metadata?.avatar_url || "/avatardefault.png";
 
-  //   const searchInput = (
-  //   <Input
-  //     aria-label="Search"
-  //     classNames={{
-  //       inputWrapper: "bg-default-100",
-  //       input: "text-sm",
-  //     }}
-  //     endContent={
-  //       <Kbd className="hidden lg:inline-block" keys={["command"]}>
-  //         K
-  //       </Kbd>
-  //     }
-  //     labelPlacement="outside"
-  //     placeholder="Search..."
-  //     startContent={
-  //       <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-  //     }
-  //     type="search"
-  //   />
-  // );
-
     const ThemeSwitch = dynamic(
         () => import("@/components/theme-switch").then(m => m.ThemeSwitch),
         { ssr: false }
     );
 
     const router = useRouter();
-
     const handleLogin = () => {
         console.log("Login");
 
@@ -152,9 +126,7 @@ export const Navbar = () => {
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>
-          <NavbarItem className="hidden lg:flex">
-              <SearchInput />
-          </NavbarItem>
+
         <NavbarItem className="hidden md:flex gap-5">
             <div className="flex gap-3">
                 <UserDropdown

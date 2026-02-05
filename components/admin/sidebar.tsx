@@ -3,8 +3,9 @@
 import { Avatar, Button, Divider } from "@heroui/react";
 import { User, Package, ShoppingCart } from "lucide-react";
 import UserDropdown from "@/components/users/UserDropdown";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
+import {supabaseClient} from "@/utils/supabase/client";
 
 const menu = [
     { label: "Dashboard", href: "/admin", icon: <User size={18} /> },
@@ -15,11 +16,27 @@ const menu = [
 
 export default function Sidebar() {
     const [user, setUser] = useState<any>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        supabaseClient.auth.getUser().then(({ data }) => {
+            setUser(data.user);
+        });
+
+        const { data: listener } =
+            supabaseClient.auth.onAuthStateChange((_event, session) => {
+                setUser(session?.user ?? null);
+            });
+
+        return () => {
+            listener.subscription.unsubscribe();
+        };
+    }, []);
     const displayName =
         user?.user_metadata?.full_name || user?.email;
+
     const avatar =
         user?.user_metadata?.avatar_url || "/avatardefault.png";
-    const router = useRouter();
     const handleLogout = async () => {
         await fetch("/api/auth/logout", { method: "POST" });
 
